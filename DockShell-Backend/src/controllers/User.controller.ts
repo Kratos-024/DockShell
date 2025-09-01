@@ -40,10 +40,10 @@ export class UserController {
         email: user.email,
       },
       process.env.JWT_SECRET || "your-secret-key",
-      { expiresIn: "48h" }
+      { expiresIn: "7d" }
     );
 
-    const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000);
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
     await prisma.authToken.create({
       data: {
@@ -55,7 +55,6 @@ export class UserController {
 
     return token;
   };
-
   public createUser = async (req: Request, res: Response) => {
     try {
       const validationResult = userCreateSchema.safeParse(req.body);
@@ -182,9 +181,8 @@ export class UserController {
       }
 
       const { username, password } = validationResult.data;
-
       const user = await prisma.user.findFirst({
-        where: { OR: [{ username }, { email: username }] },
+        where: { username: username.toLowerCase() },
       });
 
       const isPasswordValid =

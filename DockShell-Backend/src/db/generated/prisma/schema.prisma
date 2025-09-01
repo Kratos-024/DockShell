@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ctfClaimed {
+  id            String      @id @unique @default(cuid())
+  ctfProgressId String
+  levelNo       Int
+  password      String
+  ctfprogress   CtfProgress @relation(fields: [ctfProgressId], references: [id], onDelete: Cascade)
+
+  @@map("ctf_claimed")
+}
+
+model Skills {
+  id       String   @id @default(uuid()) // Added @id here
+  category Category
+  uniqueId String
+  username String // Removed @unique constraint
+  user     User     @relation(fields: [username], references: [username], onDelete: Cascade)
+
+  @@unique([username, category]) // Prevent duplicate categories per user
+}
+
+model CtfProgress {
+  id          String       @id @default(cuid())
+  ctfName     String
+  username    String
+  ctfClaimeds ctfClaimed[]
+  user        User         @relation(fields: [username], references: [username], onDelete: Cascade)
+
+  @@unique([username, ctfName])
+  @@map("ctf_progress")
+}
+
+model User {
+  id               String        @id @default(cuid())
+  firstName        String
+  LastName         String
+  username         String        @unique
+  email            String        @unique
+  profileImage     String?
+  bio              String?
+  password         String
+  resetToken       String?       @unique
+  resetTokenExpiry DateTime?
+  lastLogin        DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  tokens           AuthToken[]
+  ctfsProgress     CtfProgress[]
+  skills           Skills[] // Changed from Skills? to Skills[]
+
+  @@map("users")
+}
+
+model AuthToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("auth_tokens")
+}
+
+model CTFS {
+  ctfName      String @unique
+  totalLevels  Int
+  difficulty   String
+  imgSrc       String
+  subHeader    String
+  title        String
+  topic        String
+  totalPlayers Int
+}
+
+model Credentials {
+  ctfLevelUniqueId String    @unique
+  host             String
+  username         String
+  password         String?
+  Port             Int
+  ctflevel         CtfLevels @relation(fields: [ctfLevelUniqueId], references: [uniqueId], onDelete: Cascade)
+
+  @@map("credentials")
+}
+
+model CtfLevels {
+  password       String
+  levelNo        Int
+  ctfName        String
+  id             String       @id @default(cuid())
+  uniqueId       String       @unique
+  goal           String
+  links          String[]
+  description    String
+  commands       String[]
+  hints          String[]
+  expectedOutput String?
+  difficulty     Difficulty
+  category       Category
+  estimatedTime  String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  files          String?
+  credentials    Credentials?
+
+  @@map("levels")
+}
+
+enum Difficulty {
+  beginner
+  intermediate
+  advanced
+  expert
+}
+
+enum Category {
+  filEexploration
+  crypto
+  binary
+  forensics
+  web
+  network
+}

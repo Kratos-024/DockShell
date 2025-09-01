@@ -31,8 +31,9 @@
     "prisma": "^6.14.0"
   },
   "scripts": {
-    "dev": "bun run src/index.ts",
-    "migrate": "bunx prisma migrate dev --name initgood --schema src/db/prisma"
+    "build": "bun x prisma generate --schema=src/db/prisma/schema.prisma",
+    "start": "bun run src/index.ts",
+    "dev": "bun run start"
   },
   "peerDependencies": {
     "typescript": "^5"

@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Level Schema (existing)
 const levelCreateSchema = z.object({
   uniqueId: z.string(), // if frostling and level0 then frostling-level0
   goal: z.string().min(10, "Goal must be descriptive (min 10 chars)"),
@@ -34,7 +33,6 @@ const levelCreateSchema = z.object({
   createdAt: z.date().default(() => new Date()),
 });
 
-// User Create Schema
 const userCreateSchema = z.object({
   firstName: z
     .string()
@@ -54,12 +52,12 @@ const userCreateSchema = z.object({
       /^[a-zA-Z0-9_]+$/,
       "Username can only contain letters, numbers, and underscores"
     )
-    .transform((val) => val.toLowerCase()), // Convert to lowercase for consistency
+    .transform((val) => val.toLowerCase()),
   email: z
     .string()
     .email("Please enter a valid email address")
     .max(100, "Email must be less than 100 characters")
-    .transform((val) => val.toLowerCase()), // Convert to lowercase for consistency
+    .transform((val) => val.toLowerCase()),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters")
@@ -70,16 +68,11 @@ const userCreateSchema = z.object({
     ),
 });
 
-// User Login Schema
 const userLoginSchema = z.object({
-  username: z
-    .string()
-    .min(1, "Username or email is required")
-    .max(100, "Username or email is too long"),
+  username: z.string(),
   password: z.string().min(1, "Password is required"),
 });
 
-// Forgot Password Schema
 const forgotPasswordSchema = z.object({
   email: z
     .string()
@@ -87,7 +80,6 @@ const forgotPasswordSchema = z.object({
     .transform((val) => val.toLowerCase()),
 });
 
-// Reset Password Schema
 const resetPasswordSchema = z.object({
   token: z.string().min(1, "Reset token is required"),
   newPassword: z
@@ -100,7 +92,6 @@ const resetPasswordSchema = z.object({
     ),
 });
 
-// Change Username Schema
 const changeUsernameSchema = z.object({
   newUsername: z
     .string()
@@ -113,7 +104,6 @@ const changeUsernameSchema = z.object({
     .transform((val) => val.toLowerCase()),
 });
 
-// Change Password Schema
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, "Current password is required"),
   newPassword: z
@@ -126,7 +116,6 @@ const changePasswordSchema = z.object({
     ),
 });
 
-// Update Profile Schema
 const updateProfileSchema = z
   .object({
     firstName: z
@@ -152,7 +141,6 @@ const updateProfileSchema = z
     message: "At least one field must be provided for update",
   });
 
-// Type exports for better TypeScript support
 export type UserCreate = z.infer<typeof userCreateSchema>;
 export type UserLogin = z.infer<typeof userLoginSchema>;
 export type ForgotPassword = z.infer<typeof forgotPasswordSchema>;
@@ -162,7 +150,6 @@ export type ChangePassword = z.infer<typeof changePasswordSchema>;
 export type UpdateProfile = z.infer<typeof updateProfileSchema>;
 export type LevelCreate = z.infer<typeof levelCreateSchema>;
 
-// Schema exports
 export {
   levelCreateSchema,
   userCreateSchema,

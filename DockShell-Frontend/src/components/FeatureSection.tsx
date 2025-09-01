@@ -2,7 +2,6 @@ export const FeatureSection = () => {
   return (
     <section>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 relative z-10 py-10 max-w-6xl mx-auto">
-        {/* Feature 1: Realistic Environments */}
         <div className="flex flex-col lg:border-r py-12 relative group/feature overflow-hidden lg:border-l dark:border-neutral-800 min-h-[280px]">
           <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-t from-green-100/50 dark:from-green-900/30 to-transparent pointer-events-none"></div>
           <div className="mb-4 relative z-10 px-10 text-neutral-600 dark:text-neutral-400">
@@ -36,7 +35,6 @@ export const FeatureSection = () => {
           </p>
         </div>
 
-        {/* Feature 2: Progressive Curriculum */}
         <div className="flex flex-col lg:border-r py-12 relative group/feature overflow-hidden dark:border-neutral-800 min-h-[280px]">
           <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-t from-green-100/50 dark:from-green-900/30 to-transparent pointer-events-none"></div>
           <div className="mb-4 relative z-10 px-10 text-neutral-600 dark:text-neutral-400">
@@ -69,7 +67,6 @@ export const FeatureSection = () => {
           </p>
         </div>
 
-        {/* Feature 3: Real-World Skills */}
         <div className="flex flex-col lg:border-r py-12 relative group/feature overflow-hidden dark:border-neutral-800 min-h-[280px]">
           <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-t from-green-100/50 dark:from-green-900/30 to-transparent pointer-events-none"></div>
           <div className="mb-4 relative z-10 px-10 text-neutral-600 dark:text-neutral-400">
