@@ -31,7 +31,7 @@ This handles the user interface and communicates with the backend API.
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/DockShell-Frontend.git
+git clone https://github.com/Kratos-024/Dockshell.git
 
 # Go into the project folder
 cd DockShell-Frontend
@@ -131,7 +131,7 @@ src/
 
    This creates a `dist/` folder.
 
-2. Go to [Netlify](https://app.netlify.com/), create a new project, and connect your GitHub repo.
+2. Go to [Netlify](https://dockshell.netlify.app/), create a new project, and connect your GitHub repo.
 
 3. Configure build settings in Netlify:
 
