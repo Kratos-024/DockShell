@@ -20,8 +20,6 @@ export class WebSocketManager {
 
       const sshHandler = new SSHHandler(ws);
       const chatHandler = new StreamingChatHandler(ws, this.openaiApiKey);
-
-      // Track current input buffer and session state
       let currentInput = "";
       let commandHistory: string[] = [];
       let historyIndex = -1;
@@ -29,7 +27,7 @@ export class WebSocketManager {
       let passwordBuffer = "";
       let pendingSshConfig: any = null;
 
-      const MAX_HISTORY = 10; // Store maximum 10 commands
+      const MAX_HISTORY = 10;
 
       const replaceCurrentLine = (newText: string) => {
         ws.send("\r\x1B[K");
@@ -110,23 +108,16 @@ export class WebSocketManager {
 
       const handleEnterKey = () => {
         const command = currentInput.trim();
-
-        // Add non-empty commands to history
         if (command && command !== "") {
-          // Remove duplicate if it's the same as the last command
           if (
             commandHistory.length === 0 ||
             commandHistory[commandHistory.length - 1] !== command
           ) {
             commandHistory.push(command);
-
-            // Keep only the last MAX_HISTORY commands
             if (commandHistory.length > MAX_HISTORY) {
               commandHistory = commandHistory.slice(-MAX_HISTORY);
             }
           }
-
-          // Reset history index to point to "after last command"
           historyIndex = commandHistory.length;
         }
 
@@ -170,7 +161,6 @@ export class WebSocketManager {
             `History DOWN: index=${historyIndex}, command="${command}"`
           );
         } else if (historyIndex === commandHistory.length - 1) {
-          // Go to "after last command" - empty line
           historyIndex++;
           replaceCurrentLine("");
           console.log(`History DOWN: cleared line, index=${historyIndex}`);
@@ -189,7 +179,7 @@ export class WebSocketManager {
 
           console.log("Attempting SSH connection with config:", {
             ...fullConfig,
-            password: "*".repeat(passwordBuffer.length), // Show asterisks matching password length
+            password: "*".repeat(passwordBuffer.length),
           });
           sshHandler.connect(fullConfig);
 
@@ -198,7 +188,6 @@ export class WebSocketManager {
           return;
         }
 
-        // Handle backspace in password mode
         if (char === "\u007F") {
           if (passwordBuffer.length > 0) {
             passwordBuffer = passwordBuffer.slice(0, -1);
@@ -207,16 +196,10 @@ export class WebSocketManager {
           return;
         }
 
-        // Handle Ctrl+V paste in password mode
         if (char === "\u0016") {
-          // Note: Paste in terminal is usually handled by the terminal emulator
-          // The actual paste content will come as subsequent characters
           return;
         }
-
-        // Handle regular characters and pasted content
         if (char.length > 1) {
-          // This is likely pasted content
           passwordBuffer += char;
           ws.send("*".repeat(char.length));
         } else if (char >= " " && char <= "~") {
@@ -238,7 +221,6 @@ export class WebSocketManager {
           return;
         }
 
-        // Handle paste in normal mode
         if (data.length > 1) {
           currentInput += data;
           ws.send(data);
@@ -246,33 +228,30 @@ export class WebSocketManager {
         }
 
         switch (data) {
-          case "\r": // Enter key
+          case "\r":
             handleEnterKey();
             break;
-          case "\u007F": // Backspace
+          case "\u007F":
             handleBackspace();
             break;
-          case "\u001b[A": // Up arrow
+          case "\u001b[A":
             handleUpArrow();
             break;
-          case "\u001b[B": // Down arrow
+          case "\u001b[B":
             handleDownArrow();
             break;
-          case "\u0003": // Ctrl+C
+          case "\u0003":
             ws.send("^C\r\n");
             if (!sshHandler.isConnected()) {
               ws.send("user@macbook ~ % ");
             }
             currentInput = "";
-            historyIndex = commandHistory.length; // Reset history position
+            historyIndex = commandHistory.length;
             break;
-          case "\u0016": // Ctrl+V (paste)
-            // Paste is usually handled by the terminal emulator automatically
-            // The pasted content will come as the next data chunk
+          case "\u0016":
             break;
-          case "\u001b[D": // Left arrow
-          case "\u001b[C": // Right arrow
-            // Ignore cursor movement for now
+          case "\u001b[D":
+          case "\u001b[C":
             break;
           default:
             if (data >= " " && data <= "~") {
@@ -306,7 +285,6 @@ export class WebSocketManager {
               console.log("Unknown message type:", parsed.type);
           }
         } catch (e) {
-          // If it's not JSON and we're in SSH, treat it as raw SSH data
           if (sshHandler.isConnected()) {
             console.log("Raw SSH data received");
             sshHandler.write(msg);
